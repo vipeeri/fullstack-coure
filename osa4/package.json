@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "watch": "nodemon index.js",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "lint": "node_modules/.bin/eslint ."
   },
   "author": "ville",
   "license": "ISC",

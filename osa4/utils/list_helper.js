@@ -1,95 +1,68 @@
 const dummy = (blogs) => {
-    return dummy.length
+    return 1
   }
-
-
-const totalLikes = (blogs) => {
-    var total = 0;
-    for (s of blogs) {
-    total += s.likes
-      }
   
-
-    return total
-}
-
-const favoriteBlog = (blogs) => {
-    var max = 0
-    var favorite = null
-    for (s of blogs) {
-        if (s.likes > max) {
-            max = s.likes
-            favorite = s
-        }
-    }
-    return favorite
-}
-
-function replacer(key, value) {
-    if (key === '_id' || key === 'likes' || key === '__v' || key === 'url') {
-      return undefined;
-    }
-    return value;
+  const byLikes = (b1, b2) => b2.likes - b1.likes
+  
+  const totalLikes = (blogs) => {
+    const sumReducer = (sum, i) => sum+i
+    return blogs.map(b=>b.likes).reduce(sumReducer, 0)
   }
-
-
-
-const mostLikes = (blogs) => {
-
-    const array = blogs.map(item => ({
-        "author": item.author,
-        "likes": item.likes
-      }));
-    var max = 0
-    var favorite = null
-    var likes = 0;
-    for (s of array) {
-        if (s.likes > max) {
-            max = s.likes
-            favorite = s
-        }
-    }
-
-    for (k of array) {
-       if(k.author === favorite.author) {
-           
-        favorite.likes += k.likes
-        console.log(favorite.likes)
-       }
-    }
-    favorite.likes = favorite.likes/2
-    return favorite;
-}
-
-const mostBlogs = (blogs) => {
-    const array = blogs.map(item => ({
-        "author": item.author
-      }));
-    
-    var length = array.length;
-    
-    var ArrayWithUniqueValues = [];
-    
-    var objectCounter = {};
-    for (i = 0; i < length; i++) {
-        var currentMemboerOfArrayKey = JSON.stringify(array[i]);
-        var currentMemboerOfArrayValue = array[i];
-        if (objectCounter[currentMemboerOfArrayKey] === undefined){
-            ArrayWithUniqueValues.push(currentMemboerOfArrayValue);
-             objectCounter[currentMemboerOfArrayKey] = 1;
-        }else{
-            objectCounter[currentMemboerOfArrayKey]++;
-        }
+   
+  const favoriteBlog = (blogs) => {
+    if (blogs.length === 0) {
+      return null
     }
     
-    return(Object.entries(objectCounter)[Object.entries(objectCounter).length-1] + ' Blogs');
-}
-
+    const favorite = blogs.sort(byLikes)[0]
+  
+    return {
+      title: favorite.title,
+      author: favorite.author,
+      likes: favorite.likes
+    }
+  }
+  
+  const mostBlogs = (blogs) => {
+    if (blogs.length === 0) {
+      return null
+    }
+  
+    const reducer = (obj, blog) => {
+      obj[blog.author] = ( obj[blog.author] || 0 ) + 1
+      return obj
+    }
+  
+    const authors = blogs.reduce(reducer, {})
+  
+    const blogCounts = Object.keys(authors).map(name => {
+      return { author: name, blogs: authors[name]}
+    })
+  
+    const byBlogs = (b1, b2) => b2.blogs - b1.blogs
+  
+    return blogCounts.sort(byBlogs)[0]
+  }
+  
+  const mostLikes = (blogs) => {
+    if (blogs.length === 0) {
+      return null
+    }
+  
+    const reducer = (obj, blog) => {
+      obj[blog.author] = (obj[blog.author] || 0) + blog.likes
+      return obj
+    }
+  
+    const authors = blogs.reduce(reducer, {})
+  
+    const blogCounts = Object.keys(authors).map(name => {
+      return { author: name, likes: authors[name] }
+    })
+  
+    return blogCounts.sort(byLikes)[0]
+  }
   
   module.exports = {
-    dummy,
-    totalLikes,
-    favoriteBlog,
-    mostLikes,
-    mostBlogs
+    dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
   }
